@@ -2,6 +2,16 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## ⚠️ IMPORTANT: Check Plan First
+
+**Before starting any work, always read `Documentation/plan.md`** to understand:
+- What has been completed
+- What is currently pending
+- Known issues and blockers
+- The implementation phases
+
+After completing work, **update the plan.md** to reflect progress by marking completed items and adding any new tasks discovered.
+
 ## Project Overview
 
 A CRM web application with three components:
@@ -24,42 +34,23 @@ Local orchestration via .NET Aspire with PostgreSQL (dockerized).
 
 ### Target: 80% test coverage
 
-## Project Structure (Aspire-native)
+## Project Structure
 
 ```
 SimpleCrm.sln
 ├── src/
-│   ├── SimpleCrm.AppHost/           # Aspire orchestration
-│   ├── SimpleCrm.ServiceDefaults/   # Shared service configuration
+│   ├── SimpleCrm.AppHost/           # Aspire orchestration (Postgres, Keycloak, API, Web)
+│   ├── SimpleCrm.ServiceDefaults/   # Shared service configuration (health checks, telemetry)
 │   ├── SimpleCrm.Api/               # Web API
-│   └── SimpleCrm.Web/               # React frontend
+│   │   ├── Data/                    # DbContext and EF configurations
+│   │   └── Features/                # Vertical slices by feature
+│   │       └── Leads/Domain/        # Lead and FollowUp entities
+│   └── SimpleCrm.Web/               # React frontend (Vite + TypeScript)
 └── tests/
-    └── SimpleCrm.Api.Tests/
+    └── SimpleCrm.Api.Tests/         # xUnit + FluentAssertions
 ```
 
 ## Commands
-
-### Initial Setup
-```bash
-# Create Aspire solution
-dotnet new aspire -n SimpleCrm
-cd SimpleCrm
-
-# Add service defaults
-dotnet new aspire-servicedefaults -n SimpleCrm.ServiceDefaults -o src/SimpleCrm.ServiceDefaults
-
-# Add Web API project
-dotnet new webapi -n SimpleCrm.Api -o src/SimpleCrm.Api
-dotnet sln add src/SimpleCrm.Api
-
-# Add language-ext and testing packages
-dotnet add src/SimpleCrm.Api package LanguageExt.Core
-dotnet add tests/SimpleCrm.Api.Tests package xunit
-dotnet add tests/SimpleCrm.Api.Tests package FluentAssertions
-
-# Create React frontend with Vite
-npm create vite@latest SimpleCrm.Web -- --template react-ts
-```
 
 ### Development
 ```bash
@@ -69,8 +60,11 @@ dotnet run --project src/SimpleCrm.AppHost
 # Run API only
 dotnet run --project src/SimpleCrm.Api
 
-# Run frontend only
+# Run frontend only (requires npm install first)
 cd src/SimpleCrm.Web && npm run dev
+
+# Build solution
+dotnet build
 
 # Run tests
 dotnet test
@@ -93,7 +87,6 @@ npm run dev          # Development server
 npm run build        # Production build
 npm run preview      # Preview production build
 npm run lint         # Run ESLint
-npm test             # Run tests
 ```
 
 ## Vertical Slice Pattern
@@ -101,17 +94,17 @@ npm test             # Run tests
 Each feature is self-contained in its own folder:
 
 ```
-SimpleCrm.Api/
-└── Features/
-    └── Leads/
-        ├── CreateLead/
-        │   ├── CreateLeadEndpoint.cs
-        │   ├── CreateLeadHandler.cs
-        │   ├── CreateLeadRequest.cs
-        │   └── CreateLeadValidator.cs
-        ├── UpdateLead/
-        └── Domain/
-            └── Lead.cs
+SimpleCrm.Api/Features/
+└── Leads/
+    ├── CreateLead/
+    │   ├── CreateLeadEndpoint.cs
+    │   ├── CreateLeadHandler.cs
+    │   ├── CreateLeadRequest.cs
+    │   └── CreateLeadValidator.cs
+    ├── UpdateLead/
+    └── Domain/
+        ├── Lead.cs
+        └── FollowUp.cs
 ```
 
 ## Functional Patterns with language-ext
@@ -121,11 +114,16 @@ Use `Option<T>` instead of null, `Either<L, R>` for operations that can fail, `V
 ```csharp
 // Domain logic as pure functions
 public static Either<Error, Lead> UpdateStatus(Lead lead, LeadStatus newStatus) =>
-    lead.Status == LeadStatus.Closed
-        ? Left<Error, Lead>(new Error("Cannot update closed lead"))
+    lead.Status == LeadStatus.Won
+        ? Left<Error, Lead>(new Error("Cannot update won lead"))
         : Right<Error, Lead>(lead with { Status = newStatus });
 ```
 
 ## Keycloak Configuration
 
 Keycloak runs as a container resource in Aspire. Configure realm, clients, and roles for the CRM application. The API validates JWT tokens issued by Keycloak.
+
+## Domain Model
+
+- **Lead**: Name, Email, Phone, Company, Status (New → Contacted → Qualified → Proposal → Negotiation → Won/Lost)
+- **FollowUp**: Notes, Type (Call/Email/Meeting/Task/Note), ScheduledFor, IsCompleted
