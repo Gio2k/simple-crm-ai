@@ -55,7 +55,7 @@ SimpleCrm.sln
 ### Development
 ```bash
 # Run entire solution (API + frontend + Keycloak + Postgres)
-dotnet run --project src/SimpleCrm.AppHost
+aspire run
 
 # Run API only
 dotnet run --project src/SimpleCrm.Api

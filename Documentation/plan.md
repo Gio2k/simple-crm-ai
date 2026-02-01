@@ -150,8 +150,12 @@ This document tracks the implementation progress and next steps for the SimpleCR
 
 ## Known Issues / Blockers
 
-1. **npm not available** - Node.js/npm needs to be installed to run the React frontend
-2. **EF Core version mismatch warnings** - Minor version conflicts between Aspire components and EF Core Design package (builds successfully, warnings only)
+1. **EF Core version mismatch warnings** - Minor version conflicts between Aspire components and EF Core Design package (builds successfully, warnings only)
+
+## Resolved Issues
+
+1. ~~**npm not available** - Node.js/npm needs to be installed to run the React frontend~~ - Resolved (npm available)
+2. **Vite config for Aspire** - Fixed vite.config.ts to use PORT env variable and listen on all interfaces for Aspire integration
 
 ---
 
@@ -173,7 +177,7 @@ dotnet build
 dotnet test
 
 # Run full stack (requires Docker)
-dotnet run --project src/SimpleCrm.AppHost
+aspire run
 
 # Run API only
 dotnet run --project src/SimpleCrm.Api
