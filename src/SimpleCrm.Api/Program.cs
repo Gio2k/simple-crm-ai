@@ -1,10 +1,14 @@
+using Marten;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add service defaults (health checks, telemetry, etc.)
 builder.AddServiceDefaults();
 
-// Add PostgreSQL DbContext
-builder.AddNpgsqlDbContext<SimpleCrm.Api.Data.CrmDbContext>("crmdb");
+// Add Marten document store
+builder.Services.AddMarten()
+.UseLightweightSessions()
+.UseNpgsqlDataSource();
 
 // Add services to the container
 builder.Services.AddOpenApi();

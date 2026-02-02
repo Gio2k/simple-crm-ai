@@ -24,7 +24,7 @@ This document tracks the implementation progress and next steps for the SimpleCR
 - [x] **SimpleCrm.ServiceDefaults** - Health checks and telemetry
 - [x] **SimpleCrm.Api** - Web API with:
   - ServiceDefaults integration
-  - PostgreSQL DbContext registration
+  - Marten document store registration
   - OpenAPI support
 
 ### 3. Domain Model ✅
@@ -34,7 +34,7 @@ This document tracks the implementation progress and next steps for the SimpleCR
 - [x] **FollowUp** entity (`Features/Leads/Domain/FollowUp.cs`)
   - Properties: Id, LeadId, Notes, Type, CreatedAt, ScheduledFor, IsCompleted
   - Type enum: Call, Email, Meeting, Task, Note
-- [x] **CrmDbContext** with entity configurations
+- [x] **Marten document store** configured as document database
 
 ### 4. Frontend Setup ✅
 - [x] **SimpleCrm.Web** - Vite + React + TypeScript scaffolding
@@ -50,7 +50,7 @@ This document tracks the implementation progress and next steps for the SimpleCR
 - [x] Tests pass (1 placeholder test)
 
 ### 6. Packages Installed ✅
-- [x] API: LanguageExt.Core, Aspire.Npgsql.EntityFrameworkCore.PostgreSQL, Microsoft.EntityFrameworkCore.Design
+- [x] API: LanguageExt.Core, Marten, Marten.AspNetCore
 - [x] AppHost: Aspire.Hosting.PostgreSQL, Aspire.Hosting.Keycloak, Aspire.Hosting.NodeJs
 - [x] Tests: FluentAssertions
 
@@ -135,10 +135,9 @@ This document tracks the implementation progress and next steps for the SimpleCR
 - [ ] **Create lead page**
 - [ ] Authentication integration (Keycloak JS adapter)
 
-### Phase 4: Database & Migrations
-- [ ] Create initial EF Core migration
+### Phase 4: Database & Document Store
+- [x] Marten document store configured
 - [ ] Add seed data for development
-- [ ] Configure connection string management
 
 ### Phase 5: Testing & Quality
 - [ ] Achieve 80% code coverage target
@@ -150,7 +149,7 @@ This document tracks the implementation progress and next steps for the SimpleCR
 
 ## Known Issues / Blockers
 
-1. **EF Core version mismatch warnings** - Minor version conflicts between Aspire components and EF Core Design package (builds successfully, warnings only)
+None currently.
 
 ## Resolved Issues
 
