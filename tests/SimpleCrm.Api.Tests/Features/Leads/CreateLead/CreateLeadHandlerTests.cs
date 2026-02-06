@@ -1,5 +1,7 @@
 using AwesomeAssertions;
 using LanguageExt;
+using Marten;
+using NSubstitute;
 using SimpleCrm.Api.Features.Leads.CreateLead;
 using SimpleCrm.Api.Features.Leads.Domain;
 
@@ -120,5 +122,45 @@ public class CreateLeadHandlerTests
         lead.Email.Should().Be("john@example.com");
         lead.Phone.Should().BeNull();
         lead.Company.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task Handle_WithValidRequest_StoresLeadAndReturnsRight()
+    {
+        var session = Substitute.For<IDocumentSession>();
+        var request = new CreateLeadRequest("John Doe", "john@example.com", "555-1234", "Acme Corp");
+
+        var result = await CreateLeadHandler.Handle(request, session, CancellationToken.None);
+
+        result.IsRight.Should().BeTrue();
+        result.IfRight(lead =>
+        {
+            lead.Name.Should().Be("John Doe");
+            lead.Email.Should().Be("john@example.com");
+            lead.Phone.Should().Be("555-1234");
+            lead.Company.Should().Be("Acme Corp");
+            lead.Status.Should().Be(LeadStatus.New);
+            lead.Id.Should().NotBeEmpty();
+        });
+        session.Received().Store(Arg.Is<Lead>(l => l.Name == "John Doe" && l.Email == "john@example.com"));
+        await session.Received().SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Handle_WithInvalidRequest_ReturnsLeftAndDoesNotCallSession()
+    {
+        var session = Substitute.For<IDocumentSession>();
+        var request = new CreateLeadRequest(null, null, null, null);
+
+        var result = await CreateLeadHandler.Handle(request, session, CancellationToken.None);
+
+        result.IsLeft.Should().BeTrue();
+        result.IfLeft(error =>
+        {
+            error.Message.Should().Contain("Name is required.");
+            error.Message.Should().Contain("Email is required.");
+        });
+        session.DidNotReceive().Store(Arg.Any<Lead>());
+        await session.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 }

@@ -110,7 +110,7 @@ SimpleCrm.Api/Features/
         └── FollowUp.cs
 ```
 
-### Functional approach follwing the functional core, imprative shell pattern
+### Functional approach following the functional core, imperative shell pattern
 
 Do NOT use FluentValidation. Use functional constructs for validating inputs.
 
@@ -122,6 +122,28 @@ public static Either<Error, Lead> UpdateStatus(Lead lead, LeadStatus newStatus) 
     lead.Status == LeadStatus.Won
         ? Left<Error, Lead>(new Error("Cannot update won lead"))
         : Right<Error, Lead>(lead with { Status = newStatus });
+```
+
+### Testing Strategy
+
+**Functional core** (pure functions like `Validate`, `CreateLead`): Test directly with no mocking needed — pass inputs, assert outputs.
+
+**Imperative shell** (async handlers like `Handle` that interact with `IDocumentSession`): Use **NSubstitute** to mock infrastructure dependencies. Test two paths:
+- **Happy path**: valid input flows through to persistence — assert the return value is `Right`, and verify `session.Store()` and `session.SaveChangesAsync()` were called
+- **Failure path**: invalid input short-circuits before persistence — assert the return value is `Left` with expected errors, and verify the session was **never** called
+
+```csharp
+// Happy path — mock IDocumentSession, verify persistence
+var session = Substitute.For<IDocumentSession>();
+var result = await Handler.Handle(validRequest, session, CancellationToken.None);
+result.IsRight.Should().BeTrue();
+session.Received().Store(Arg.Is<Lead>(l => l.Name == "John Doe"));
+await session.Received().SaveChangesAsync(Arg.Any<CancellationToken>());
+
+// Failure path — verify session is never touched
+var result = await Handler.Handle(invalidRequest, session, CancellationToken.None);
+result.IsLeft.Should().BeTrue();
+session.DidNotReceive().Store(Arg.Any<Lead>());
 ```
 
 ## Keycloak Configuration
