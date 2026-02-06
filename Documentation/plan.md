@@ -45,14 +45,14 @@ This document tracks the implementation progress and next steps for the SimpleCR
   - Basic App.tsx placeholder
 
 ### 5. Test Project ✅
-- [x] **SimpleCrm.Api.Tests** - xUnit project with FluentAssertions
+- [x] **SimpleCrm.Api.Tests** - xUnit project with AwesomeAssertions
 - [x] Project reference to API
 - [x] Tests pass (1 placeholder test)
 
 ### 6. Packages Installed ✅
 - [x] API: LanguageExt.Core, Marten, Marten.AspNetCore
 - [x] AppHost: Aspire.Hosting.PostgreSQL, Aspire.Hosting.Keycloak, Aspire.Hosting.NodeJs
-- [x] Tests: FluentAssertions
+- [x] Tests: AwesomeAssertions
 
 ### 7. Documentation ✅
 - [x] CLAUDE.md created with project guidance

@@ -14,12 +14,13 @@ After completing work, **update the plan.md** to reflect progress by marking com
 
 ## Project Overview
 
-A CRM web application with three components:
+A CRM web application with the following components:
 - **.NET 10 Web API** - Lead management with CRUD operations, follow-up entries, status tracking, and customer acquisition workflows
 - **React/TypeScript Frontend** - Dashboard and editing pages built with Vite
 - **Keycloak** - CIAM for authentication/authorization
+- **Postgres** - database server that can be used as a document database using martendb.io
 
-Local orchestration via .NET Aspire with PostgreSQL (dockerized).
+Local orchestration via .NET Aspire
 
 ## Architecture
 
@@ -47,7 +48,7 @@ SimpleCrm.sln
 │   │       └── Leads/Domain/        # Lead and FollowUp entities
 │   └── SimpleCrm.Web/               # React frontend (Vite + TypeScript)
 └── tests/
-    └── SimpleCrm.Api.Tests/         # xUnit + FluentAssertions
+    └── SimpleCrm.Api.Tests/         # xUnit + AwesomeAssertions
 ```
 
 ## Commands
@@ -89,7 +90,9 @@ npm run preview      # Preview production build
 npm run lint         # Run ESLint
 ```
 
-## Vertical Slice Pattern
+## Development patterns
+
+### Vertical Slice Pattern
 
 Each feature is self-contained in its own folder:
 
@@ -107,7 +110,9 @@ SimpleCrm.Api/Features/
         └── FollowUp.cs
 ```
 
-## Functional Patterns with language-ext
+### Functional approach follwing the functional core, imprative shell pattern
+
+Do NOT use FluentValidation. Use functional constructs for validating inputs.
 
 Use `Option<T>` instead of null, `Either<L, R>` for operations that can fail, `Validation<Fail, Success>` for accumulating errors:
 
