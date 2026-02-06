@@ -1,4 +1,5 @@
 using Marten;
+using SimpleCrm.Api.Features.Leads.CreateLead;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,5 +29,8 @@ app.UseHttpsRedirection();
 
 // Health check endpoint
 app.MapGet("/", () => Results.Ok("SimpleCRM API"));
+
+// Map feature endpoints
+app.MapCreateLeadEndpoint();
 
 app.Run();

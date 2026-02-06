@@ -65,12 +65,11 @@ This document tracks the implementation progress and next steps for the SimpleCR
 ### Phase 1: API Endpoints (Vertical Slices)
 
 #### Leads Feature
-- [ ] **CreateLead** slice
-  - [ ] CreateLeadRequest.cs (DTO)
-  - [ ] CreateLeadValidator.cs (FluentValidation)
-  - [ ] CreateLeadHandler.cs (business logic with language-ext)
-  - [ ] CreateLeadEndpoint.cs (minimal API endpoint)
-  - [ ] Unit tests
+- [x] **CreateLead** slice
+  - [x] CreateLeadRequest.cs (DTO)
+  - [x] CreateLeadHandler.cs (functional validation with language-ext Validation + business logic)
+  - [x] CreateLeadEndpoint.cs (minimal API endpoint - POST /api/leads)
+  - [x] Unit tests (9 tests: validation, trimming, error accumulation, lead creation)
 
 - [ ] **GetLeads** slice (list with filtering/pagination)
   - [ ] GetLeadsRequest.cs
