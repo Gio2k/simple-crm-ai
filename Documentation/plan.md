@@ -67,7 +67,7 @@ This document tracks the implementation progress and next steps for the SimpleCR
 #### Leads Feature
 - [ ] **CreateLead** slice
   - [ ] CreateLeadRequest.cs (DTO)
-  - [ ] CreateLeadValidator.cs (FluentValidation)
+  - [ ] CreateLeadValidator.cs (functional validation with language-ext)
   - [ ] CreateLeadHandler.cs (business logic with language-ext)
   - [ ] CreateLeadEndpoint.cs (minimal API endpoint)
   - [ ] Unit tests

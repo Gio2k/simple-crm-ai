@@ -110,9 +110,9 @@ SimpleCrm.Api/Features/
         └── FollowUp.cs
 ```
 
-### Functional approach follwing the functional core, imprative shell pattern
+### Functional approach following the functional core, imperative shell pattern
 
-Do NOT use FluentValidation. Use functional constructs for validating inputs.
+Use functional constructs for validating inputs.
 
 Use `Option<T>` instead of null, `Either<L, R>` for operations that can fail, `Validation<Fail, Success>` for accumulating errors:
 
