@@ -116,6 +116,15 @@ Use functional constructs for validating inputs.
 
 Use `Option<T>` instead of null, `Either<L, R>` for operations that can fail, `Validation<Fail, Success>` for accumulating errors:
 
+#### Validation usage example
+
+```csharp
+(ValidateName(request.Name), ValidateEmail(request.Email), ...)
+    .Apply((name, email, phone, company) => request)
+```
+
+#### Functional business logic
+
 ```csharp
 // Domain logic as pure functions
 public static Either<Error, Lead> UpdateStatus(Lead lead, LeadStatus newStatus) =>
@@ -123,6 +132,8 @@ public static Either<Error, Lead> UpdateStatus(Lead lead, LeadStatus newStatus) 
         ? Left<Error, Lead>(new Error("Cannot update won lead"))
         : Right<Error, Lead>(lead with { Status = newStatus });
 ```
+
+**Pattern Matching**: ALWAYS use `Match` rather than explicit IsSome/IsRight/IsSuccess checks in business logic
 
 ## Keycloak Configuration
 
