@@ -4,7 +4,7 @@ This document tracks the implementation progress and next steps for the SimpleCR
 
 ## Project Status: Foundation Complete
 
-**Last Updated:** 2026-02-01
+**Last Updated:** 2026-02-26
 
 ---
 
@@ -144,6 +144,45 @@ This document tracks the implementation progress and next steps for the SimpleCR
 - [ ] Add integration tests with WebApplicationFactory
 - [ ] Add React component tests
 - [ ] Configure CI pipeline (optional)
+
+---
+
+## Open Topics (For Refinement)
+
+The following items were identified during a plan review and need discussion before implementation.
+
+### Inconsistencies
+
+1. **CLAUDE.md references stale `Data/` directory** — The project structure in CLAUDE.md documents `src/SimpleCrm.Api/Data/` as containing "DbContext and EF configurations." This directory does not exist since the migration to Marten (commit `d7298b9`). CLAUDE.md should be updated to remove or replace this reference.
+
+2. **AppHost "React frontend (npm app)" wording** — Section 2 states AppHost has a React frontend project reference, but the `.csproj` only contains a project reference to `SimpleCrm.Api`. The npm app is likely configured in `Program.cs` code, not as a project reference. Clarify wording.
+
+3. **Placeholder test `UnitTest1.cs` still exists** — Listed in Section 5 as "1 placeholder test" but never marked for cleanup. Should be removed now that real tests exist.
+
+### Undefined Requirements
+
+4. **GetLeads filtering and pagination** — What filters should be supported? (by status, company, date range, name search?) What pagination model? (offset/limit vs cursor-based) What default sort order?
+
+5. **UpdateLeadStatus transition rules** — The plan mentions "status transition rules" but they are not defined. Decisions needed:
+   - Is the flow strictly linear (New → Contacted → Qualified → Proposal → Negotiation → Won/Lost)?
+   - Can statuses be skipped (e.g., New → Qualified)?
+   - Can a Lost lead be reopened?
+   - Can a Won lead be modified?
+
+6. **DeleteLead — soft delete or hard delete?** — Not specified. For a CRM, soft delete is typical to preserve audit history, but this needs a decision. If soft delete, should there be a restore endpoint?
+
+7. **FollowUp slices lack detail** — All five FollowUp slices are single bullet points with no sub-task breakdown (Request/Validator/Handler/Endpoint/Tests), unlike the Lead slices. These should be expanded before implementation.
+
+8. **Keycloak role-to-endpoint mapping** — Three roles are listed (Admin, Sales, Viewer) but there is no definition of which roles can access which endpoints. For example:
+   - Can Viewers create/edit leads or only read?
+   - Can Sales users delete leads?
+   - Are there any data-level restrictions (e.g., Sales users only see their own leads)?
+
+9. **Integration test strategy for Marten/PostgreSQL** — Phase 5 mentions "integration tests with WebApplicationFactory" but does not specify how the PostgreSQL/Marten dependency will be handled in tests (Testcontainers, in-memory alternative, or shared test database).
+
+### Minor Fixes
+
+10. **Quick Start command `aspire run`** — The correct command is likely `dotnet run --project src/SimpleCrm.AppHost`. Verify and update.
 
 ---
 
