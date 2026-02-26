@@ -116,24 +116,24 @@ This document tracks the implementation progress and next steps for the SimpleCR
 - [ ] Implement role-based authorization (Admin, Sales, Viewer)
 - [ ] Protect API endpoints
 
-### Phase 3: React Frontend
-- [ ] Install npm dependencies
-- [ ] Set up React Router
-- [ ] Create layout components (Header, Sidebar, Footer)
-- [ ] **Dashboard page**
-  - [ ] Lead statistics cards
-  - [ ] Recent leads list
-  - [ ] Upcoming follow-ups
-- [ ] **Leads list page**
-  - [ ] Data table with sorting/filtering
-  - [ ] Status badges
-  - [ ] Actions (edit, delete)
-- [ ] **Lead detail/edit page**
-  - [ ] Lead information form
-  - [ ] Follow-up history
-  - [ ] Add follow-up modal
-- [ ] **Create lead page**
-- [ ] Authentication integration (Keycloak JS adapter)
+### Phase 3: React Frontend ✅
+- [x] Install npm dependencies (added react-router-dom)
+- [x] Set up React Router (BrowserRouter with Layout route)
+- [x] Create layout components (Sidebar, Layout with Outlet)
+- [x] **Dashboard page**
+  - [x] Lead statistics cards (count per status)
+  - [x] Recent leads list
+  - [x] Upcoming follow-ups
+- [x] **Leads list page**
+  - [x] Data table with sorting/filtering
+  - [x] Status badges
+  - [x] Actions (edit, delete)
+- [x] **Lead detail/edit page**
+  - [x] Lead information form
+  - [x] Follow-up history
+  - [x] Add follow-up modal
+- [x] **Create lead page** (with validation)
+- [x] Mock data layer (`src/api/mockData.ts`, `src/api/leads.ts`) — real API calls not wired
 
 ### Phase 4: Database & Document Store
 - [x] Marten document store configured
@@ -144,6 +144,63 @@ This document tracks the implementation progress and next steps for the SimpleCR
 - [ ] Add integration tests with WebApplicationFactory
 - [ ] Add React component tests
 - [ ] Configure CI pipeline (optional)
+
+### Phase 6: Playwright E2E Tests
+
+**Approach:** Install `@playwright/test` inside `src/SimpleCrm.Web`. Configure it to auto-start the Vite dev server and run tests against mock data — no real API or backend required.
+
+#### Setup
+- [ ] Add `@playwright/test` to devDependencies in `src/SimpleCrm.Web/package.json`
+- [ ] Add `"test:e2e": "playwright test"` script
+- [ ] Run `npm install` + `playwright install chromium`
+- [ ] Create `src/SimpleCrm.Web/playwright.config.ts`
+  - `baseURL: http://localhost:5173`
+  - `webServer`: `npm run dev`, `reuseExistingServer: true`
+  - Chromium only (extend to firefox/webkit later)
+- [ ] Update `tsconfig.json` to exclude `e2e/` from Vite's TS build
+
+#### Test files (`src/SimpleCrm.Web/e2e/`)
+
+- [ ] **`dashboard.spec.ts`**
+  - Heading "Dashboard" visible
+  - 7 status stat cards with correct mock counts
+  - Recent leads table shows 5 rows
+  - Upcoming follow-ups list rendered
+  - Clicking lead name navigates to `/leads/:id`
+  - Clicking follow-up lead name navigates to `/leads/:id`
+
+- [ ] **`leads-list.spec.ts`**
+  - Heading "Leads" visible; all 8 mock leads shown
+  - Search input filters rows by name/company/email
+  - Status dropdown filters to matching status
+  - Column header click sorts table (toggle asc/desc)
+  - "Edit" button navigates to `/leads/:id`
+  - "Delete" button: confirm → lead removed from table
+  - "+ New Lead" navigates to `/leads/new`
+
+- [ ] **`create-lead.spec.ts`**
+  - Heading "New Lead" visible
+  - Submitting empty form shows validation errors (Name, Email, Company)
+  - Invalid email shows format error
+  - Valid submission navigates to new lead's detail page
+  - "Cancel" and "← Back to Leads" navigate to `/leads`
+
+- [ ] **`lead-detail.spec.ts`**
+  - Form fields pre-populated with lead data
+  - Editing fields and saving keeps updated values
+  - Status dropdown change updates badge immediately
+  - Follow-up list shows existing follow-ups
+  - "+ Add" opens modal; submit adds item to list
+  - "✓ Complete" marks follow-up completed
+  - "Delete" on follow-up removes it from list
+  - "← Back to Leads" navigates to `/leads`
+  - Unknown lead ID redirects to `/leads`
+
+- [ ] **`navigation.spec.ts`**
+  - Sidebar visible on all pages with brand "SimpleCRM"
+  - Each sidebar link navigates to correct route
+  - Active link has highlighted styling
+  - Unknown path redirects to `/`
 
 ---
 
