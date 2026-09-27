@@ -1,6 +1,15 @@
 @SimpleCrm.Api_HostAddress = http://localhost:5295
 
-GET {{SimpleCrm.Api_HostAddress}}/weatherforecast/
+# Create a lead
+POST {{SimpleCrm.Api_HostAddress}}/api/leads
+Content-Type: application/json
 Accept: application/json
+
+{
+  "name": "Alice Smith",
+  "email": "alice@example.com",
+  "phone": "555-1234",
+  "company": "Acme Corp"
+}
 
 ###

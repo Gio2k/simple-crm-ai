@@ -4,7 +4,7 @@ This document tracks the implementation progress and next steps for the SimpleCR
 
 ## Project Status: Foundation Complete
 
-**Last Updated:** 2026-02-01
+**Last Updated:** 2026-07-02
 
 ---
 
@@ -65,12 +65,13 @@ This document tracks the implementation progress and next steps for the SimpleCR
 ### Phase 1: API Endpoints (Vertical Slices)
 
 #### Leads Feature
-- [ ] **CreateLead** slice
-  - [ ] CreateLeadRequest.cs (DTO)
-  - [ ] CreateLeadValidator.cs (functional validation with language-ext)
-  - [ ] CreateLeadHandler.cs (business logic with language-ext)
-  - [ ] CreateLeadEndpoint.cs (minimal API endpoint)
-  - [ ] Unit tests
+- [x] **CreateLead** slice
+  - [x] CreateLeadRequest.cs (DTO, nullable props enforced by validator)
+  - [x] CreateLeadValidator.cs (functional validation with language-ext, accumulated errors via tuple `.Apply`)
+  - [x] CreateLeadHandler.cs (functional core/imperative shell: pure lead construction + Either-wrapped persistence)
+  - [x] CreateLeadEndpoint.cs (minimal API endpoint: 201 Created / 400 validation / 500 on store failure)
+  - [x] Unit tests (validator + handler, 12 tests)
+  - [x] `Data/Leads/ILeadRepository` + `MartenLeadRepository` port/adapter added for handler testability
 
 - [ ] **GetLeads** slice (list with filtering/pagination)
   - [ ] GetLeadsRequest.cs
